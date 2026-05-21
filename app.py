@@ -10,7 +10,13 @@ import numpy as np
 
 # Load model
 model = joblib.load('diabetes_model.pkl')
-app = FastAPI(title="Ethiopian Diabetes Risk API")
+
+app = FastAPI(
+    title="Ethiopian Diabetes Risk API",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
+)
 
 # define input format
 class PatientData(BaseModel):
