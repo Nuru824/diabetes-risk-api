@@ -11,12 +11,21 @@ import numpy as np
 # Load model
 model = joblib.load('diabetes_model.pkl')
 
-app = FastAPI(
-    title="Ethiopian Diabetes Risk API",
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json"
-)
+import os
+
+# This automatically detects and adjusts to the Hugging Face proxy path
+app = FastAPI(root_path=os.getenv("SPACE_HOST", ""))
+
+@app.get("/")
+def read_root():
+    return {"message": "API is active!"}
+
+# app = FastAPI(
+#     title="Ethiopian Diabetes Risk API",
+#     docs_url="/docs",
+#     redoc_url="/redoc",
+#     openapi_url="/openapi.json"
+# )
 
 # define input format
 class PatientData(BaseModel):

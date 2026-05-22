@@ -52,4 +52,3 @@ input_df = pd.DataFrame([[45,27,130,90,1,1]],
                         columns=['age', 'bmi', 'glucose', 'blood_pressure', 'family_history', 'physical_activity'])
 prediction = model.predict(input_df)[0]
 print(f"{prediction}")
-
