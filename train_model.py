@@ -1,14 +1,15 @@
 # part 1: Train _ save model - run once 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+import xgboost as xgb
+# from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-
+from sklearn.metrics import r2_score
 import joblib
 
 # Generate ethiopian-style diabetes data
 np.random.seed(42)
-n_samples = 500
+n_samples = 1000
 
 data = {
     'age': np.random.normal(45, 15, n_samples).clip(20, 80),
@@ -28,8 +29,10 @@ df['risk_score'] = (
     0.2 * (df['glucose'] - 20) / 60 * 100 +
     0.15 * df['blood_pressure'] / 120 * 100 +
     0.1 * df['family_history'] * 30 + 
-    -0.05 * df['physical_activity'] * 20 + 
-    np.random.normal(0, 5, n_samples)
+    -0.05 * df['physical_activity'] * 20 +
+    # add non-linear interaction xgboost will learn this
+    0.05 * df['glucose'] * df['bmi'] / 100 +
+    np.random.normal(0, 3, n_samples)
 )
 df['risk_score'] = df['risk_score'].clip(0, 100)
 
@@ -38,9 +41,20 @@ features = ['age', 'bmi', 'glucose', 'blood_pressure', 'family_history', 'physic
 X = df[features]
 y = df['risk_score']
 
-# Train model
-model = LinearRegression()
-model.fit(X, y)
+# split and train xgboost
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = xgb.XGBRegressor(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=4,
+    random_state=42
+)
+model.fit(X_train, y_train)
+
+# Evaluate
+y_pred = model.predict(X_test)
+r2 = r2_score(y_test, y_pred)
+print(f"XGBoost trained. R2 score {r2:.3f}")
 
 # save model
 joblib.dump(model, 'diabetes_model.pkl')
