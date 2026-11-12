@@ -1,8 +1,5 @@
 # Part 2: FASTAPI DEPLOYMENT (app.py)
-
-# app.py - Deploy this to render / python anywhere
-
-# app.py - Deploy this to Render / PythonAnywhere
+# app.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib
